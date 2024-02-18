@@ -1,34 +1,36 @@
-# pricetracker
-A price tracker is a tool that allows users to track the prices of specific products or services over time. This can be useful for a variety of purposes, such as:
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-Monitoring price changes: By tracking prices over time, users can see how prices have changed and get a sense of whether they are increasing or decreasing.
+## Getting Started
 
-Comparison shopping: By comparing prices from different sources, users can find the best deals and save money.
+First, run the development server:
 
-Price forecasting: By analyzing price trends, users can try to predict future price movements and make informed purchasing decisions.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-To build a price tracker, you might consider using web scraping techniques to gather data from various online sources, and then storing that data in a database for analysis. You could also build user interfaces for displaying and interacting with the data, such as graphs or tables. Other features you might consider adding include alerts for when prices reach certain thresholds, or the ability to track prices for multiple products at once.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-Install
+## Learn More
 
-```pip install -r requirements.txt``` 
+To learn more about Next.js, take a look at the following resources:
 
-Run
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-```python price.py```
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-Pass function name as a command line argument from list of functions above.
+## Deploy on Vercel
 
-**or** 
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-```python price1.py```
-
-# How to contribute
-
-**If you want to add a new file:**
-
-1. Create new file ```price2.py```.
-2. Make sure you add the changes to the Readme file!
-3. Make sure your newly implemented code works, by running `price2.py` after adding  to the repository.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
