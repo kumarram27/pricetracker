@@ -20,8 +20,8 @@ const HeroCarousel = () => {
         showThumbs={false}
         showStatus={false}
         infiniteLoop
-        // autoPlay
-        // interval={2000}
+        autoPlay
+        interval={2000}
       >
         {heroImages.map((image) => (
           <Image 
@@ -39,7 +39,7 @@ const HeroCarousel = () => {
         alt="arrow"
         width={170}
         height={170}
-        className="max-xl:hidden absolute bottom-0 -left-[15%] z-0 cursor-pointer"
+        className="max-xl:hidden absolute bottom-[12%] -left-[15%] z-0 cursor-pointer"
       />
     </div>
   );
