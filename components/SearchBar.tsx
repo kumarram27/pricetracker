@@ -1,67 +1,82 @@
-"use client";
-import { FormEvent, useState } from "react";
-
-const isValidValidProductUrl = (url:string) => {
-    try {
-        const parsedUrl = new URL(url);
-        const hostname = parsedUrl.hostname;
-        if (
-            hostname.includes('amazon.com') 
-            || hostname.includes('amazon.in') 
-            || hostname.includes('flipkart.com')
-            || hostname.includes('amazon.')
-            || hostname.endsWith('flipkart')
-            ||hostname.endsWith('amazon')
-        ){
-            return true;
-        }
-    } catch (error) {
-        return false
-    }
-    return false;
-}
+"use client"
+import React, { useState } from "react";
+import axios from "axios";
 
 const SearchBar = () => {
-    const [searchPrompt, setSearchPrompt] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+  const [searchPrompt, setSearchPrompt] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [productData, setProductData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (event:FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const isValidLink = isValidValidProductUrl(searchPrompt);
-        if(!isValidLink) return alert('Please enter a valid product link');
-        try {
-            setIsLoading(true);
-        } catch (error) {
-            console.log(error);
-        }finally{
-            setIsLoading(false);
-        }
-    };
+  const isValidValidProductUrl = (url: string) => {
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname;
+      if (
+        hostname.includes("amazon.com") ||
+        hostname.includes("amazon.in") ||
+        hostname.includes("flipkart.com") ||
+        hostname.includes("amazon.") ||
+        hostname.endsWith("flipkart") ||
+        hostname.endsWith("amazon")
+      ) {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
+    return false;
+  };
 
-    
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const isValidLink = isValidValidProductUrl(searchPrompt);
+    if (!isValidLink) return alert("Please enter a valid product link");
 
-    return (
-        <form 
-        className="flex flex-wrap gap-4 mt-12"
-        onSubmit={handleSubmit}>
-        
+    try {
+      setIsLoading(true);
+      const response = await axios.post("/api/scrape", { url: searchPrompt });
+      setProductData(response.data);
+    } catch (error) {
+      console.error("Error:", error);
+      setError("An error occurred while fetching product data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <form className="flex flex-wrap gap-4 mt-12" onSubmit={handleSubmit}>
         <input
-            type="text"
-            value={searchPrompt}
-            onChange={(e) => setSearchPrompt(e.target.value)}
-            placeholder="Search for products"
-            className="searchbar-input"    
+          type="text"
+          value={searchPrompt}
+          onChange={(e) => setSearchPrompt(e.target.value)}
+          placeholder="Search for products"
+          className="searchbar-input"
         />
 
         <button
-            type="submit"
-            className="searchbar-btn"
-            disabled={searchPrompt === '' || isLoading}
-            >
-            
-            {isLoading ? 'Searching...' : 'Search'}
+          type="submit"
+          className="searchbar-btn"
+          disabled={searchPrompt === "" || isLoading}
+        >
+          {isLoading ? "Searching..." : "Search"}
         </button>
-        </form>
-    )
-}
-export default SearchBar
+      </form>
+      {productData && (
+        <div>
+          <h2>Product Details</h2>
+          <p>Name: {productData.name}</p>
+          <p>Current Price: {productData.currentPrice}</p>
+          <p>Lowest Price: {productData.lowestPrice}</p>
+          <p>Average Price: {productData.averagePrice}</p>
+          <p>Highest Price: {productData.highestPrice}</p>
+        </div>
+      )}
+      {error && <p>{error}</p>}
+    </div>
+  );
+};
+
+export default SearchBar;
