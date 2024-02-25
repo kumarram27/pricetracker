@@ -1,11 +1,13 @@
 import puppeteer from "puppeteer";
 
-export interface ProductInfo {
-  name: string;
-  currentPrice: number;
-  lowestPrice: number;
-  averagePrice: number;
-  highestPrice: number;
+interface ProductInfo {
+  title: string | null;
+  image: string | null;
+  lowestPrice: string | null;
+  lowestPriceDate: string | null;
+  averagePrice: string | null;
+  currentPrice: string | null;
+  priceDetailsHTML: string | null;
 }
 
 export async function searchProductInPriceHistory(
@@ -15,65 +17,83 @@ export async function searchProductInPriceHistory(
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await page.goto("https://pricehistory.com");
+    // Navigate to the website
+    await page.goto("https://price-history.in/");
 
     // Wait for the search input field to appear
-    await page.waitForSelector(".flex.flex-col.mt-5.space-y-1 input");
+    await page.waitForSelector("input#search");
 
-    // Type the product link into the search input field
-    await page.type(".flex.flex-col.mt-5.space-y-1 input", productLink);
+    // Type the product link into the input field
+    await page.type("input#search", productLink);
 
-    // Click the search button
-    await page.click(".flex.flex-col.mt-5.space-y-1 button");
+    // Click on the submit button
+    await Promise.all([
+      page.waitForNavigation({ timeout: 70000 }), // Increase to 70 seconds
+      page.click("button#search-submit"),
+    ]);
 
-    // Wait for the search results to appear
-    const productInfo: ProductInfo = await page.evaluate(() => {
-        const productNameElement = document.querySelector(
-            "h1.font-semibold.text-lg"
-        );
-        const productName = productNameElement
-            ? productNameElement.textContent?.trim() ?? ""
-            : "";
+    console.log("Search submitted!");
 
-        const productInfoText =
-            document
-                .querySelector(".content-width.mx-auto.px-3")
-                ?.textContent?.trim() ?? "";
-        const regex =
-            /This product price is (\d+) but the lowest price is (\d+)\. The average and highest price are (\d+) and (\d+) respectively\./;
-        const match = productInfoText.match(regex);
+    // Wait for the title element to appear
+    await page.waitForSelector(".col-12.ph-title.my-1 h1");
 
-        if (!match) {
-            throw new Error("Product information not found.");
-        }
+    // Get the title text
+    const titleElement = await page.$eval(
+      ".col-12.ph-title.my-1 h1",
+      (element) => element?.textContent?.trim() // Use optional chaining to safely access text content
+    );
 
-        const [
-            ,
-            currentPriceStr,
-            lowestPriceStr,
-            averagePriceStr,
-            highestPriceStr,
-        ] = match;
+    // Get the image URL
+    const imageURL = await page.$eval(
+      ".ph-hero-image img",
+      (element) => element.src
+    );
 
-        const currentPrice = parseFloat(currentPriceStr);
-        const lowestPrice = parseFloat(lowestPriceStr);
-        const averagePrice = parseFloat(averagePriceStr);
-        const highestPrice = parseFloat(highestPriceStr);
+    // Get the lowest price and its date
+    const lowestPriceDate = await page.$eval(
+      ".ph-table-overview tr:nth-child(1) td:nth-child(1)",
+      (element) => element.textContent?.trim()
+    );
+    const lowestPrice = await page.$eval(
+      ".ph-table-overview tr:nth-child(1) td:nth-child(2)",
+      (element) => element.textContent?.trim()
+    );
 
-        return {
-            name: productName,
-            currentPrice,
-            lowestPrice,
-            averagePrice,
-            highestPrice,
-        };
-    });
+    // Get the average price
+    const averagePrice = await page.$eval(
+      ".ph-table-overview tr:nth-child(2) td",
+      (element) => element.textContent?.trim()
+    );
+
+    // Get the current price
+    const currentPrice = await page.$eval(
+      ".ph-table-offer tbody tr:nth-child(1) td:nth-child(2)",
+      (element) => element.textContent?.trim()
+    );
+
+    // Get the HTML of the price details section
+    const priceDetailsHTML = await page.$eval(
+      "#price-details",
+      (element) => element.outerHTML
+    );
 
     await browser.close();
 
+    // Construct the product info object
+    const productInfo: ProductInfo = {
+      title: titleElement || null,
+      image: imageURL,
+      lowestPrice: lowestPrice || null,
+      lowestPriceDate: lowestPriceDate || null,
+      averagePrice: averagePrice || null,
+      currentPrice: currentPrice || null,
+      priceDetailsHTML: priceDetailsHTML,
+    };
+
+    // Return the scraped product information
     return productInfo;
   } catch (error) {
-    console.error("Error searching product in PriceHistory:", error);
+    console.error("Error:", error);
     return null;
   }
 }

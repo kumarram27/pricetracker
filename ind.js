@@ -23,9 +23,8 @@ const productLink =
     console.log("Search submitted!");
 
     // Wait for the search results page to load
-    // Wait for the search results page to load with an increased timeout
     await Promise.all([
-      page.waitForNavigation({ timeout: 70000 }), // Increase to 60 seconds
+      page.waitForNavigation({ timeout: 70000 }), // Increase to 70 seconds
       page.click("button#search-submit"),
     ]);
 
@@ -34,34 +33,53 @@ const productLink =
       ".col-12.ph-title.my-1 h1",
       (element) => element.textContent.trim()
     );
-    console.log("Title:", titleElement);
 
-    // Get the price details
-    const priceDetails = await page.$eval(
-      "#price-details",
-      (element) => element.outerHTML
+    // Get the image URL
+    const imageURL = await page.$eval(
+      ".ph-hero-image img",
+      (element) => element.src
     );
-    console.log("Price Details:", priceDetails);
 
-    // Get the lowest price
+    // Get the lowest price and its date
+    const lowestPriceDate = await page.$eval(
+      ".ph-table-overview tr:nth-child(1) td:nth-child(1)",
+      (element) => element.textContent.trim()
+    );
     const lowestPrice = await page.$eval(
       ".ph-table-overview tr:nth-child(1) td:nth-child(2)",
       (element) => element.textContent.trim()
     );
-    console.log("Lowest Price:", lowestPrice);
+
     // Get the average price
     const averagePrice = await page.$eval(
-        '#price-details > div > div.col-12.col-sm-12.col-md-6.col-lg-7.p-0 > div > div:nth-child(1) > table > tbody > tr:nth-child(2) > td' ,
-        (element) => element.textContent.trim()
+      ".ph-table-overview tr:nth-child(2) td",
+      (element) => element.textContent.trim()
     );
-    console.log("Average Price:", averagePrice);
 
     // Get the current price
     const currentPrice = await page.$eval(
       ".ph-table-offer tbody tr:nth-child(1) td:nth-child(2)",
       (element) => element.textContent.trim()
     );
-    console.log("Current Price:", currentPrice);
+
+    // Get the HTML of the price details section
+    const priceDetailsHTML = await page.$eval(
+      "#price-details",
+      (element) => element.outerHTML
+    );
+
+    // Construct the product info object
+    const productInfo = {
+      title: titleElement,
+      image: imageURL,
+      lowestPrice: lowestPrice,
+      lowestPriceDate: lowestPriceDate,
+      averagePrice: averagePrice,
+      currentPrice: currentPrice,
+      priceDetailsHTML: priceDetailsHTML,
+    };
+
+    console.log("Product Info:", productInfo);
   } catch (error) {
     console.error("Error:", error);
   } finally {
