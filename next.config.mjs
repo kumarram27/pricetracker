@@ -1,13 +1,17 @@
-const config = {
-  // Other Next.js configuration options can go here
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  output: "export",
 
-  // Define the exportPathMap function for static HTML export
-  exportPathMap: async function () {
-    return {
-      "/": { page: "/" },
-      // Add other routes here if needed
-    };
-  },
+  // Optional: Change links `/me` -> `/me/` and emit `/me.html` -> `/me/index.html`
+  // trailingSlash: true,
+
+  // Optional: Prevent automatic `/me` -> `/me/`, instead preserve `href`
+  // skipTrailingSlashRedirect: true,
+
+  // Optional: Change the output directory `out` -> `dist`
+  // distDir: 'dist',
 };
 
-export default config;
+module.exports = nextConfig;
