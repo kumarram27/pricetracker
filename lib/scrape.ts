@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 
-interface ProductInfo {
+export interface ProductInfo {
   title: string | null;
   image: string | null;
   lowestPrice: string | null;

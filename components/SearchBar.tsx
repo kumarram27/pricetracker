@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -67,11 +67,15 @@ const SearchBar = () => {
       {productData && (
         <div>
           <h2>Product Details</h2>
-          <p>Name: {productData.name}</p>
-          <p>Current Price: {productData.currentPrice}</p>
+          <p>Title: {productData.title}</p>
           <p>Lowest Price: {productData.lowestPrice}</p>
+          <p>Lowest Price Date: {productData.lowestPriceDate}</p>
           <p>Average Price: {productData.averagePrice}</p>
-          <p>Highest Price: {productData.highestPrice}</p>
+          <p>Current Price: {productData.currentPrice}</p>
+          <img src={productData.image} alt="Product" />
+          <div
+            dangerouslySetInnerHTML={{ __html: productData.priceDetailsHTML }}
+          />
         </div>
       )}
       {error && <p>{error}</p>}

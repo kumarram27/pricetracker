@@ -1,5 +1,7 @@
+// pages/api/scrape.ts
+
 import { NextApiRequest, NextApiResponse } from "next";
-import { searchProductInPriceHistory } from "../../lib/scrape";
+import { searchProductInPriceHistory, ProductInfo } from "../../lib/scrape";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,8 +14,14 @@ export default async function handler(
   const { url } = req.body;
 
   try {
-    const productData = await searchProductInPriceHistory(url);
-    res.status(200).json(productData);
+    const productData: ProductInfo | null = await searchProductInPriceHistory(
+      url
+    );
+    if (productData) {
+      res.status(200).json(productData);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
   } catch (error) {
     console.error("Error:", error);
     res
