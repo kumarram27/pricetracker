@@ -3,8 +3,9 @@
  */
 const nextConfig = {
   /* config options here */
-  outputFileTracing: true,
+  output: "export",
   basePath: '/pricetracker',
+  reactStrictMode: true,
 };
 
 module.exports = nextConfig;
